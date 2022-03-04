@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'kramdown', '~> 2.3'
   spec.add_dependency 'kramdown-parser-gfm', '~> 1.1'
+  spec.add_dependency 'kramdown-parser-automation', '~> 0.0.1'
   spec.add_dependency 'mixlib-cli', '~> 2.1', '>= 2.1.1'
   spec.add_dependency 'mixlib-config', '>= 2.2.1', '< 4'
   spec.add_dependency 'mixlib-shellout'

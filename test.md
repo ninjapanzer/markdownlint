@@ -1,5 +1,5 @@
 # HI
 
-```bash {thing="buggs"}
+```bash {things-i-like="buggs"}
 thing
 ```

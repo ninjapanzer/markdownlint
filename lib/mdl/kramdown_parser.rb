@@ -4,35 +4,27 @@
 require 'kramdown/parser/gfm'
 require 'kramdown/parser/automation'
 
-
 module Kramdown
   module Parser
     # modified parser class - see comment above
     class MarkdownLint < Kramdown::Parser::Kramdown
 
-      Kramdown::Parser::Automation.load_extension(
-        :codeblock_automation,
-        {
-          start: Kramdown::Parser::GFM::FENCED_CODEBLOCK_START
-        }
-      )
+      attr_reader :src, :tree
 
       def initialize(source, options)
         super
         i = @block_parsers.index(:codeblock_fenced)
         @block_parsers.delete(:codeblock_fenced)
         @block_parsers.insert(i, :codeblock_fenced_gfm)
-        @block_parsers.unshift(:codeblock_automation)
+        @block_parsers.unshift(automation)
       end
 
-      Kramdown::Parser::Automation::REGISTRY.each do |parser|
-        define_method("parse_#{parser}".to_sym) do
-          Kramdown::Parser::Automation.send("parse_#{parser}".to_sym, self, @src, @tree)
-        end
-      end
-
-      def new_block_el(*args)
-        super
+      def automation
+        Kramdown::Parser::Automation.load_extension(:codeblock_automation, {
+          start: Kramdown::Parser::GFM::FENCED_CODEBLOCK_START
+        })
+        Kramdown::Parser::Automation.mixin_registry(self)
+        :codeblock_automation
       end
 
       # Regular kramdown parser, but with GFM style fenced code blocks

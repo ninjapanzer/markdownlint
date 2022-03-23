@@ -1,0 +1,5 @@
+---
+plugins:
+  - gem: kramdown-parser-automation
+    plugins:
+      - block_parsers: codeblock_automation

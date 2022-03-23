@@ -76,6 +76,15 @@ module MarkdownLint
     end
     cli.cli_arguments.flatten!
 
+    if File.exist?("#{Dir.home}/.markdownlint/plugin_config")
+      config = YAML.load_file("#{Dir.home}/.markdownlint/plugin_config")
+      MarkdownLint::Config[:plugins] = config.fetch('plugins', [])
+    end
+
+    MarkdownLint::Config[:plugins].each do |plugin|
+      require plugin.fetch('gem')
+    end
+
     status = 0
     results = []
     docs_to_print = []

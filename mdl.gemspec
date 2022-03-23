@@ -1,6 +1,22 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'mdl/version'
+require 'yaml'
+
+def load_plugins(spec)
+  return unless File.exist?("#{Dir.home}/.markdownlint/plugin_config")
+  config = YAML.load_file("#{Dir.home}/.markdownlint/plugin_config")
+  plugins = config.fetch('plugins', [])
+  plugins.each do |p|
+    spec.add_dependency(p.fetch('gem'))
+  rescue => e
+    puts "gem failed #{e.inspect}"
+  ensure
+    next
+  end
+rescue => e
+  puts "failed to load plugins #{e.inspect}"
+end
 
 Gem::Specification.new do |spec|
   spec.name = 'mdl'
@@ -23,7 +39,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'kramdown', '~> 2.3'
   spec.add_dependency 'kramdown-parser-gfm', '~> 1.1'
-  spec.add_dependency 'kramdown-parser-automation', '~> 0.0.1'
   spec.add_dependency 'mixlib-cli', '~> 2.1', '>= 2.1.1'
   spec.add_dependency 'mixlib-config', '>= 2.2.1', '< 4'
   spec.add_dependency 'mixlib-shellout'
@@ -34,4 +49,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rake', '>= 11.2', '< 14'
   spec.add_development_dependency 'rubocop', '~> 1.28.1'
+
+  load_plugins(spec)
 end
+

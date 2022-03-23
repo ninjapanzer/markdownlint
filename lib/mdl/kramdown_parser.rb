@@ -2,7 +2,7 @@
 # appropriate for markdownlint, but which don't make sense to try to put
 # upstream.
 require 'kramdown/parser/gfm'
-require 'kramdown/parser/automation'
+require_relative 'config'
 
 module Kramdown
   module Parser
@@ -16,15 +16,17 @@ module Kramdown
         i = @block_parsers.index(:codeblock_fenced)
         @block_parsers.delete(:codeblock_fenced)
         @block_parsers.insert(i, :codeblock_fenced_gfm)
-        @block_parsers.unshift(automation)
+        prepare_plugins
+        # Kramdown::Parser::GFM::FENCED_CODEBLOCK_START
       end
 
-      def automation
-        Kramdown::Parser::Automation.load_extension(:codeblock_automation, {
-          start: Kramdown::Parser::GFM::FENCED_CODEBLOCK_START
-        })
-        Kramdown::Parser::Automation.mixin_registry(self)
-        :codeblock_automation
+      def prepare_plugins
+        ::MarkdownLint::Config[:plugins].first['plugins'].each do |p|
+          p.map do |type, parser|
+            parsers = instance_variable_get("@#{type}".to_sym)
+            parsers.unshift(parser.to_sym)
+          end
+        end
       end
 
       # Regular kramdown parser, but with GFM style fenced code blocks

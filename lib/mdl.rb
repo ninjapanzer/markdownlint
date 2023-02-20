@@ -5,6 +5,7 @@ require_relative 'mdl/kramdown_parser'
 require_relative 'mdl/ruleset'
 require_relative 'mdl/style'
 require_relative 'mdl/version'
+require 'byebug'
 
 require 'kramdown'
 require 'mixlib/shellout'
@@ -12,6 +13,7 @@ require 'mixlib/shellout'
 # Primary MDL container
 module MarkdownLint
   def self.run(argv = ARGV)
+
     cli = MarkdownLint::CLI.new
     cli.run(argv)
     ruleset = RuleSet.new
